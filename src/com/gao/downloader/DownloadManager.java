@@ -13,7 +13,7 @@ public class DownloadManager {
         this.mContext = context;
     }
 
-    public synchronized DownloadManager getInstance(Context context) {
+    public static synchronized DownloadManager getInstance(Context context) {
         if (null == mInstance) {
             mInstance = new DownloadManager(context);
         }
@@ -21,10 +21,11 @@ public class DownloadManager {
         return mInstance;
     }
 
-    public void add(Context context, DownloadEntry entry) {
-        Intent intent = new Intent(context, DownloadService.class);
+    public void add(DownloadEntry entry) {
+        Intent intent = new Intent(mContext, DownloadService.class);
         intent.putExtra(Constants.KEY_DOWNLOAD_ENTRY, entry);
-        context.startService(intent);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ACTION , Constants.KEY_DOWNLOAD_ACTION_ADD);
+        mContext.startService(intent);
     }
 
     public void pause() {
