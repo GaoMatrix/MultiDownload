@@ -1,6 +1,7 @@
 package com.gao.downloader;
 
 import android.os.Bundle;
+import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +38,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
         entry.url = "http://api.stay4it.com/uploads/test.jpg";
         entry.id = "1";
         mDownloadManager.add(entry);
+        mDownloadManager.cancel(entry);
     }
     
     @Override

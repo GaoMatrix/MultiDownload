@@ -24,22 +24,31 @@ public class DownloadManager {
     public void add(DownloadEntry entry) {
         Intent intent = new Intent(mContext, DownloadService.class);
         intent.putExtra(Constants.KEY_DOWNLOAD_ENTRY, entry);
-        intent.putExtra(Constants.KEY_DOWNLOAD_ACTION , Constants.KEY_DOWNLOAD_ACTION_ADD);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_ADD);
         mContext.startService(intent);
     }
 
-    public void pause() {
-
+    public void pause(DownloadEntry entry) {
+        Intent intent = new Intent(mContext, DownloadService.class);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ENTRY, entry);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_PAUSE);
+        mContext.startService(intent);
     }
 
-    public void resume() {
-
+    public void resume(DownloadEntry entry) {
+        Intent intent = new Intent(mContext, DownloadService.class);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ENTRY, entry);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_RESUME);
+        mContext.startService(intent);
     }
 
-    public void cancel() {
-
+    public void cancel(DownloadEntry entry) {
+        Intent intent = new Intent(mContext, DownloadService.class);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ENTRY, entry);
+        intent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_CANCEL);
+        mContext.startService(intent);
     }
-    
+
     public void addObserver(DataWatcher watcher) {
         DataChanger.getInstance().addObserver(watcher);
     }

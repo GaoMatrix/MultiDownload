@@ -4,11 +4,13 @@ package com.gao.downloader;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.provider.ContactsContract.Contacts.Data;
 
 import com.gao.downloader.DownloadEntry.DownloadStatus;
 
+import java.util.HashMap;
+
 public class DownloadService extends Service {
+    private HashMap<String, DownloadTask> mDownloadingTasks = new HashMap<String, DownloadTask>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,20 +36,53 @@ public class DownloadService extends Service {
 
     private void doAction(int action, DownloadEntry entry) {
         // check action , do related action
-        if (action == Constants.KEY_DOWNLOAD_ACTION_ADD) {
-            entry.status = DownloadStatus.downloading;
-            DataChanger.getInstance().postStatus(entry);
-            
-            entry.totalLength = 1024 * 5;
-            for (int  i = 0; i < entry.totalLength; ) {
-                i += 1024;
-                entry.currentLength += 1024;
-                DataChanger.getInstance().postStatus(entry);
-            }
-            
-            entry.status = DownloadStatus.completed;
-            DataChanger.getInstance().postStatus(entry);
+        switch (action) {
+            case Constants.KEY_DOWNLOAD_ACTION_ADD:
+                startDownload(entry);
+                break;
+            case Constants.KEY_DOWNLOAD_ACTION_CANCEL:
+                cancelDownload(entry);
+                break;
+            case Constants.KEY_DOWNLOAD_ACTION_PAUSE:
+                pauseDownload(entry);
+                break;
+            case Constants.KEY_DOWNLOAD_ACTION_RESUME:
+                resumeDownload(entry);
+                break;
+            default:
+                break;
         }
+    }
+
+    private void resumeDownload(DownloadEntry entry) {
+        startDownload(entry);
+    }
+
+    private void cancelDownload(DownloadEntry entry) {
+        // remove DownloadTask from mDownloadingTasks because it contains
+        // downloading task.
+        DownloadTask task = mDownloadingTasks.remove(entry.id);
+        if (null != task) {
+            task.cancel();
+        }
+    }
+
+    private void pauseDownload(DownloadEntry entry) {
+        // remove DownloadTask from mDownloadingTasks because it contains
+        // downloading task.
+        DownloadTask task = mDownloadingTasks.remove(entry.id);
+        if (null != task) {
+            task.pause();
+        }
+    }
+
+    private void startDownload(DownloadEntry entry) {
+        DownloadTask task = new DownloadTask(entry);
+        task.start();
+        // entery.id as key
+        mDownloadingTasks.put(entry.id, task);
+
+        
     }
 
 }
