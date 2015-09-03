@@ -1,52 +1,80 @@
+
 package com.gao.downloader;
 
 import android.os.Bundle;
-import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.gao.multidownload.R;
+import com.gao.downloader.DownloadEntry.DownloadStatus;
 
-public class MainActivity extends ActionBarActivity implements OnClickListener{
+public class MainActivity extends ActionBarActivity implements OnClickListener {
 
-    private Button mDownloadBtn;
+    private Button mDownloadStartBtn;
+    private Button mDownloadPauseBtn;
+    private Button mDownloadCancelBtn;
     private DownloadManager mDownloadManager;
+    private DownloadEntry mEntry;
     private DataWatcher mDataWatcher = new DataWatcher() {
-        
+
         @Override
         public void notifyUpdate(DownloadEntry data) {
+            mEntry = data;
+            if (mEntry.status == DownloadStatus.cancel) {
+                mEntry = null;
+            }
             Trace.d(data.toString());
         }
     };
-    
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDownloadBtn = (Button) findViewById(R.id.mDownloadBtn);
-        mDownloadBtn.setOnClickListener(this);
-        mDownloadManager  = DownloadManager.getInstance(this);
+        mDownloadStartBtn = (Button) findViewById(R.id.mDownloadStartBtn);
+        mDownloadStartBtn.setOnClickListener(this);
+        mDownloadPauseBtn = (Button) findViewById(R.id.mDownloadPauseBtn);
+        mDownloadPauseBtn.setOnClickListener(this);
+        mDownloadCancelBtn = (Button) findViewById(R.id.mDownloadCancelBtn);
+        mDownloadCancelBtn.setOnClickListener(this);
+        mDownloadManager = DownloadManager.getInstance(this);
     }
-    
+
     @Override
     public void onClick(View v) {
-        DownloadEntry entry = new DownloadEntry();
-        entry.name = "test.jpg";
-        entry.url = "http://api.stay4it.com/uploads/test.jpg";
-        entry.id = "1";
-        mDownloadManager.add(entry);
-        mDownloadManager.cancel(entry);
+        if (null == mEntry) {
+            mEntry = new DownloadEntry();
+            mEntry.name = "test.jpg";
+            mEntry.url = "http://api.stay4it.com/uploads/test.jpg";
+            mEntry.id = "1";
+        }
+        switch (v.getId()) {
+            case R.id.mDownloadStartBtn:
+                mDownloadManager.add(mEntry);
+                break;
+            case R.id.mDownloadPauseBtn:
+                if (mEntry.status == DownloadStatus.downloading) {
+                    mDownloadManager.pause(mEntry);
+                } else if (mEntry.status == DownloadStatus.pause) {
+                    mDownloadManager.resume(mEntry);
+                }
+                break;
+            case R.id.mDownloadCancelBtn:
+                mDownloadManager.cancel(mEntry);
+                break;
+            default:
+                break;
+        }
+
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
         mDownloadManager.addObserver(mDataWatcher);
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();

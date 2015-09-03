@@ -5,10 +5,23 @@
     android:orientation="vertical" >
 
     <Button
-        android:id="@+id/mDownloadBtn"
-        android:layout_gravity="center"
+        android:id="@+id/mDownloadStartBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Download" />
+        android:layout_gravity="center"
+        android:text="DownloadStart" />
+
+    <Button
+        android:id="@+id/mDownloadPauseBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="DownloadPause" />
+    <Button
+        android:id="@+id/mDownloadCancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="DownloadCancel" />
 
 </LinearLayout>

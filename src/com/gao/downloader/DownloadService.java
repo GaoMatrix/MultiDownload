@@ -5,12 +5,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.gao.downloader.DownloadEntry.DownloadStatus;
-
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DownloadService extends Service {
     private HashMap<String, DownloadTask> mDownloadingTasks = new HashMap<String, DownloadTask>();
+    private ExecutorService mExecutors;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -20,8 +21,8 @@ public class DownloadService extends Service {
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
         super.onCreate();
+        mExecutors = Executors.newCachedThreadPool();
     }
 
     @Override
@@ -78,11 +79,10 @@ public class DownloadService extends Service {
 
     private void startDownload(DownloadEntry entry) {
         DownloadTask task = new DownloadTask(entry);
-        task.start();
+        // task.start();
         // entery.id as key
         mDownloadingTasks.put(entry.id, task);
-
-        
+        mExecutors.execute(task);
     }
 
 }
