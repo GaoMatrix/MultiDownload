@@ -9,8 +9,8 @@ import com.gao.downloader.DownloadEntry.DownloadStatus;
 public class DownloadTask implements Runnable {
 
     private DownloadEntry mEntry;
-    private boolean mIsPaused;
-    private boolean mIsCancelled;
+    private volatile boolean mIsPaused;
+    private volatile boolean mIsCancelled;
     private Handler mHandler;
 
     public DownloadTask(DownloadEntry entry, Handler handler) {
@@ -31,9 +31,7 @@ public class DownloadTask implements Runnable {
     public void start() {
         mEntry.status = DownloadStatus.downloading;
         // DataChanger.getInstance().postStatus(mEntry);
-        Message message = mHandler.obtainMessage();
-        message.obj = mEntry;
-        mHandler.sendMessage(message);
+        notifyUpdate(mEntry, DownloadService.NOTIFY_DOWNLOADING);
 
         mEntry.totalLength = 1024 * 100;
         for (int i = mEntry.currentLength; i < mEntry.totalLength;) {
@@ -43,27 +41,23 @@ public class DownloadTask implements Runnable {
                 e.printStackTrace();
             }
             if (mIsCancelled || mIsPaused) {
-                mEntry.status = mIsCancelled ? DownloadStatus.cancelled : DownloadStatus.paused;
-                // DataChanger.getInstance().postStatus(mEntry);
-                message = mHandler.obtainMessage();
-                message.obj = mEntry;
-                mHandler.sendMessage(message);
+               notifyUpdate(mEntry, DownloadService.NOTIFY_PAUSED_OR_CANCELLED);
                 // TODO if cancelled, delete related file.
                 return;
             }
 
             i += 1024;
             mEntry.currentLength += 1024;
-            // DataChanger.getInstance().postStatus(mEntry);
-            message = mHandler.obtainMessage();
-            message.obj = mEntry;
-            mHandler.sendMessage(message);
+            notifyUpdate(mEntry, DownloadService.NOTIFY_UPDATING);
         }
 
-        mEntry.status = DownloadStatus.completed;
-        // DataChanger.getInstance().postStatus(mEntry);
-        message = mHandler.obtainMessage();
-        message.obj = mEntry;
+        notifyUpdate(mEntry, DownloadService.NOTIFY_COMPLETED);
+    }
+
+    private void notifyUpdate(DownloadEntry entry, int what) {
+        Message message = mHandler.obtainMessage();
+        message.what = what;
+        message.obj = entry;
         mHandler.sendMessage(message);
     }
 

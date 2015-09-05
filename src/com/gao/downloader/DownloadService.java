@@ -14,6 +14,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class DownloadService extends Service {
+
+    public static final int NOTIFY_DOWNLOADING = 1;
+    public static final int NOTIFY_UPDATING = 2;
+    public static final int NOTIFY_PAUSED_OR_CANCELLED = 3;
+    public static final int NOTIFY_COMPLETED = 4;
+
     private HashMap<String, DownloadTask> mDownloadingTasks = new HashMap<String, DownloadTask>();
     private ExecutorService mExecutors;
     private LinkedBlockingDeque<DownloadEntry> mWaitingQueue = new LinkedBlockingDeque<DownloadEntry>();
@@ -21,13 +27,11 @@ public class DownloadService extends Service {
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             DownloadEntry entry = (DownloadEntry) msg.obj;
-            switch (entry.status) {
-                case cancelled:
-                case paused:
-                case completed:
-                    checkNext(entry);
+            switch (msg.what) {
+                case NOTIFY_PAUSED_OR_CANCELLED:
+                case NOTIFY_COMPLETED:
+                    checkNext();
                     break;
-
                 default:
                     break;
             }
@@ -42,7 +46,7 @@ public class DownloadService extends Service {
         return null;
     }
 
-    protected void checkNext(DownloadEntry entry) {
+    protected void checkNext() {
         DownloadEntry newEntry = mWaitingQueue.poll();
         if (null != newEntry) {
             startDownload(newEntry);
