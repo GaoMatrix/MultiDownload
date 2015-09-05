@@ -9,6 +9,7 @@ import android.os.IBinder;
 import com.gao.downloader.DownloadEntry.DownloadStatus;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -85,9 +86,34 @@ public class DownloadService extends Service {
             case Constants.KEY_DOWNLOAD_ACTION_RESUME:
                 resumeDownload(entry);
                 break;
+            case Constants.KEY_DOWNLOAD_ACTION_PAUSE_ALL:
+                pauseAll();
+                break;
+            case Constants.KEY_DOWNLOAD_ACTION_RECOVER_ALL:
+                recoverAll();
+                break;
             default:
                 break;
         }
+    }
+
+    private void recoverAll() {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void pauseAll() {
+        while (mWaitingQueue.iterator().hasNext()) {
+            DownloadEntry entry = mWaitingQueue.poll();
+            entry.status = DownloadStatus.paused;
+            // FIXME notify all at once.
+            DataChanger.getInstance().postStatus(entry);
+        }
+
+        for (Map.Entry<String, DownloadTask> entry : mDownloadingTasks.entrySet()) {
+            entry.getValue().pause();
+        }
+        mDownloadingTasks.clear();
     }
 
     private void addDownload(DownloadEntry entry) {
