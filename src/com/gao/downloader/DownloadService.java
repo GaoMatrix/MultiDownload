@@ -8,6 +8,7 @@ import android.os.IBinder;
 
 import com.gao.downloader.DownloadEntry.DownloadStatus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -98,8 +99,13 @@ public class DownloadService extends Service {
     }
 
     private void recoverAll() {
-        // TODO Auto-generated method stub
-
+        ArrayList<DownloadEntry> mRecoverableEntries = DataChanger.getInstance()
+                .queryAllRecoverableEntries();
+        if (null != mRecoverableEntries) {
+            for (DownloadEntry downloadEntry : mRecoverableEntries) {
+                addDownload(downloadEntry);
+            }
+        }
     }
 
     private void pauseAll() {

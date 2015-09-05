@@ -41,16 +41,19 @@ public class DownloadTask implements Runnable {
                 e.printStackTrace();
             }
             if (mIsCancelled || mIsPaused) {
-               notifyUpdate(mEntry, DownloadService.NOTIFY_PAUSED_OR_CANCELLED);
+                mEntry.status = mIsCancelled ? DownloadStatus.cancelled : DownloadStatus.paused;
+                notifyUpdate(mEntry, DownloadService.NOTIFY_PAUSED_OR_CANCELLED);
                 // TODO if cancelled, delete related file.
                 return;
             }
 
             i += 1024;
             mEntry.currentLength += 1024;
+            mEntry.status = DownloadEntry.DownloadStatus.downloading;
             notifyUpdate(mEntry, DownloadService.NOTIFY_UPDATING);
         }
 
+        mEntry.status = DownloadEntry.DownloadStatus.completed;
         notifyUpdate(mEntry, DownloadService.NOTIFY_COMPLETED);
     }
 
