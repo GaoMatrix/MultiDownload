@@ -1,5 +1,6 @@
 <resources>
 
     <string name="app_name">MultiDownload</string>
+    <string name="hello_world">download</string>
 
 </resources>

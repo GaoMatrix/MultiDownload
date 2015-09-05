@@ -9,18 +9,38 @@ public class DownloadEntry implements Serializable {
     public String url;
 
     public enum DownloadStatus {
-        waiting, downloading, pause, resume, cancel, completed
+        idle, waiting, downloading, paused, resume, cancel, completed
     }
 
-    public DownloadStatus status;
+    public DownloadStatus status = DownloadStatus.idle;
 
     public int currentLength;
     public int totalLength;
 
+    public DownloadEntry(String url) {
+        this.url = url;
+        this.id = url;
+        this.name = url.substring(url.lastIndexOf("/") + 1);
+    } 
+
+    public DownloadEntry() {
+        // TODO Auto-generated constructor stub
+    }
+
     @Override
     public String toString() {
-        return "DownloadEntry [id=" + id + ", name=" + name + ", url=" + url + ", status=" + status
-                + ", currentLength=" + currentLength + ", totalLength=" + totalLength + "]";
+        return "DownloadEntry: " + url + " is " + status.name() + " with " + currentLength + "/"
+                + totalLength;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o.hashCode() == this.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 
 }

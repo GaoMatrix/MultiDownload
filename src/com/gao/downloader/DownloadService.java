@@ -3,6 +3,7 @@ package com.gao.downloader;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 
 import java.util.HashMap;
@@ -12,6 +13,13 @@ import java.util.concurrent.Executors;
 public class DownloadService extends Service {
     private HashMap<String, DownloadTask> mDownloadingTasks = new HashMap<String, DownloadTask>();
     private ExecutorService mExecutors;
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            // put this callback to UI thread.
+            DataChanger.getInstance().postStatus((DownloadEntry) msg.obj);
+        };
+    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -78,7 +86,7 @@ public class DownloadService extends Service {
     }
 
     private void startDownload(DownloadEntry entry) {
-        DownloadTask task = new DownloadTask(entry);
+        DownloadTask task = new DownloadTask(entry, mHandler);
         // task.start();
         // entery.id as key
         mDownloadingTasks.put(entry.id, task);

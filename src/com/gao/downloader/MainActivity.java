@@ -56,7 +56,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             case R.id.mDownloadPauseBtn:
                 if (mEntry.status == DownloadStatus.downloading) {
                     mDownloadManager.pause(mEntry);
-                } else if (mEntry.status == DownloadStatus.pause) {
+                } else if (mEntry.status == DownloadStatus.paused) {
                     mDownloadManager.resume(mEntry);
                 }
                 break;
