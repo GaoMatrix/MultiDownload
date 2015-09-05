@@ -9,7 +9,7 @@ public class DownloadEntry implements Serializable {
     public String url;
 
     public enum DownloadStatus {
-        idle, waiting, downloading, paused, resume, cancel, completed
+        idle, waiting, downloading, paused, resume, cancelled, completed
     }
 
     public DownloadStatus status = DownloadStatus.idle;

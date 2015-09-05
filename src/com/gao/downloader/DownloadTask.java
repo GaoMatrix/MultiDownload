@@ -43,7 +43,7 @@ public class DownloadTask implements Runnable {
                 e.printStackTrace();
             }
             if (mIsCancelled || mIsPaused) {
-                mEntry.status = mIsCancelled ? DownloadStatus.cancel : DownloadStatus.paused;
+                mEntry.status = mIsCancelled ? DownloadStatus.cancelled : DownloadStatus.paused;
                 // DataChanger.getInstance().postStatus(mEntry);
                 message = mHandler.obtainMessage();
                 message.obj = mEntry;

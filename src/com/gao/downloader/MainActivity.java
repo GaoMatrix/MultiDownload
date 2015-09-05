@@ -21,7 +21,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         @Override
         public void notifyUpdate(DownloadEntry data) {
             mEntry = data;
-            if (mEntry.status == DownloadStatus.cancel) {
+            if (mEntry.status == DownloadStatus.cancelled) {
                 mEntry = null;
             }
             Trace.d(data.toString());

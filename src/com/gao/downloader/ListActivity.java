@@ -1,3 +1,4 @@
+
 package com.gao.downloader;
 
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.gao.downloader.DownloadEntry.DownloadStatus;
 
 import java.util.ArrayList;
 
@@ -103,7 +106,8 @@ public class ListActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     if (entry.status == DownloadEntry.DownloadStatus.idle) {
                         mDownloadManager.add(entry);
-                    } else if (entry.status == DownloadEntry.DownloadStatus.downloading) {
+                    } else if (entry.status == DownloadEntry.DownloadStatus.downloading
+                            || entry.status == DownloadStatus.waiting) {
                         mDownloadManager.pause(entry);
                     } else if (entry.status == DownloadEntry.DownloadStatus.paused) {
                         mDownloadManager.resume(entry);

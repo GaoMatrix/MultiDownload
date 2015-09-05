@@ -6,16 +6,31 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 
+import com.gao.downloader.DownloadEntry.DownloadStatus;
+
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class DownloadService extends Service {
     private HashMap<String, DownloadTask> mDownloadingTasks = new HashMap<String, DownloadTask>();
     private ExecutorService mExecutors;
+    private LinkedBlockingDeque<DownloadEntry> mWaitingQueue = new LinkedBlockingDeque<DownloadEntry>();
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
+            DownloadEntry entry = (DownloadEntry) msg.obj;
+            switch (entry.status) {
+                case cancelled:
+                case paused:
+                case completed:
+                    checkNext(entry);
+                    break;
+
+                default:
+                    break;
+            }
             // put this callback to UI thread.
             DataChanger.getInstance().postStatus((DownloadEntry) msg.obj);
         };
@@ -25,6 +40,13 @@ public class DownloadService extends Service {
     public IBinder onBind(Intent intent) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    protected void checkNext(DownloadEntry entry) {
+        DownloadEntry newEntry = mWaitingQueue.poll();
+        if (null != newEntry) {
+            startDownload(newEntry);
+        }
     }
 
     @Override
@@ -47,7 +69,8 @@ public class DownloadService extends Service {
         // check action , do related action
         switch (action) {
             case Constants.KEY_DOWNLOAD_ACTION_ADD:
-                startDownload(entry);
+                // startDownload(entry);
+                addDownload(entry);
                 break;
             case Constants.KEY_DOWNLOAD_ACTION_CANCEL:
                 cancelDownload(entry);
@@ -63,8 +86,19 @@ public class DownloadService extends Service {
         }
     }
 
+    private void addDownload(DownloadEntry entry) {
+        if (mDownloadingTasks.size() >= Constants.MAX_DOWNLOAD_TASKS) {
+            entry.status = DownloadStatus.waiting;
+            mWaitingQueue.offer(entry);
+            // waiting is also a state, need to notify the UI.
+            DataChanger.getInstance().postStatus(entry);
+        } else {
+            startDownload(entry);
+        }
+    }
+
     private void resumeDownload(DownloadEntry entry) {
-        startDownload(entry);
+        addDownload(entry);
     }
 
     private void cancelDownload(DownloadEntry entry) {
@@ -73,6 +107,13 @@ public class DownloadService extends Service {
         DownloadTask task = mDownloadingTasks.remove(entry.id);
         if (null != task) {
             task.cancel();
+        } else {
+            // When addDownload, the entry may in mDownloadingTasks, or in
+            // mWaitingQueue. If the entry is not in mDownloadingTasks, it will
+            // in mWaitingQueue, so we should remove it from mWaitingQueue.
+            mWaitingQueue.remove(entry);
+            entry.status = DownloadStatus.cancelled;
+            DataChanger.getInstance().postStatus(entry);
         }
     }
 
@@ -82,6 +123,13 @@ public class DownloadService extends Service {
         DownloadTask task = mDownloadingTasks.remove(entry.id);
         if (null != task) {
             task.pause();
+        } else {
+            // When addDownload, the entry may in mDownloadingTasks, or in
+            // mWaitingQueue. If the entry is not in mDownloadingTasks, it will
+            // in mWaitingQueue, so we should remove it from mWaitingQueue.
+            mWaitingQueue.remove(entry);
+            entry.status = DownloadStatus.paused;
+            DataChanger.getInstance().postStatus(entry);
         }
     }
 
