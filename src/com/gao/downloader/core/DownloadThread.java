@@ -1,4 +1,4 @@
-package com.gao.downloader;
+package com.gao.downloader.core;
 
 public class DownloadThread {
 

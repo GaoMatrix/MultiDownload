@@ -1,10 +1,12 @@
 
-package com.gao.downloader;
+package com.gao.downloader.core;
 
 import android.os.Handler;
 import android.os.Message;
 
-import com.gao.downloader.DownloadEntry.DownloadStatus;
+import com.gao.downloader.entities.DownloadEntry;
+import com.gao.downloader.entities.DownloadEntry.DownloadStatus;
+import com.gao.downloader.utilities.Trace;
 
 public class DownloadTask implements Runnable {
 

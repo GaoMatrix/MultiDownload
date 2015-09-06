@@ -1,7 +1,8 @@
 
-package com.gao.downloader;
+package com.gao.downloader.notify;
 
-import com.gao.downloader.DownloadEntry.DownloadStatus;
+import com.gao.downloader.entities.DownloadEntry;
+import com.gao.downloader.entities.DownloadEntry.DownloadStatus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

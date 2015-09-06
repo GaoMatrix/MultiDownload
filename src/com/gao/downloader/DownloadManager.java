@@ -4,6 +4,12 @@ package com.gao.downloader;
 import android.content.Context;
 import android.content.Intent;
 
+import com.gao.downloader.core.DownloadService;
+import com.gao.downloader.entities.DownloadEntry;
+import com.gao.downloader.notify.DataChanger;
+import com.gao.downloader.notify.DataWatcher;
+import com.gao.downloader.utilities.Constants;
+
 public class DownloadManager {
 
     private static DownloadManager mInstance;

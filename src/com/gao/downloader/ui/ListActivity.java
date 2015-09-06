@@ -1,5 +1,5 @@
 
-package com.gao.downloader;
+package com.gao.downloader.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,7 +13,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.gao.downloader.DownloadEntry.DownloadStatus;
+import com.gao.downloader.DownloadManager;
+import com.gao.downloader.R;
+import com.gao.downloader.R.id;
+import com.gao.downloader.R.layout;
+import com.gao.downloader.R.menu;
+import com.gao.downloader.R.string;
+import com.gao.downloader.entities.DownloadEntry;
+import com.gao.downloader.entities.DownloadEntry.DownloadStatus;
+import com.gao.downloader.notify.DataWatcher;
+import com.gao.downloader.utilities.Trace;
 
 import java.util.ArrayList;
 

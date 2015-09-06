@@ -1,5 +1,7 @@
 
-package com.gao.downloader;
+package com.gao.downloader.notify;
+
+import com.gao.downloader.entities.DownloadEntry;
 
 import java.util.Observable;
 import java.util.Observer;

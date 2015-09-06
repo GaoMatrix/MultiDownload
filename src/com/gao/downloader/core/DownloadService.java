@@ -1,12 +1,15 @@
 
-package com.gao.downloader;
+package com.gao.downloader.core;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 
-import com.gao.downloader.DownloadEntry.DownloadStatus;
+import com.gao.downloader.entities.DownloadEntry;
+import com.gao.downloader.entities.DownloadEntry.DownloadStatus;
+import com.gao.downloader.notify.DataChanger;
+import com.gao.downloader.utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;

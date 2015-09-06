@@ -1,5 +1,5 @@
 
-package com.gao.downloader;
+package com.gao.downloader.entities;
 
 import java.io.Serializable;
 
